@@ -10,27 +10,59 @@ namespace CriPakTools
     {
         static void Main(string[] args)
         {
-            Console.WriteLine("CriPakTools\n");
-            Console.WriteLine("Based off Falo's code relased on Xentax forums (see readme.txt), modded by Nanashi3 from FuwaNovels.\nInsertion code by EsperKnight\n\n");
-
             if (args.Length == 0)
             {
-                Console.WriteLine("CriPakTool Usage:\n");
-                Console.WriteLine("CriPakTool.exe IN_FILE - Displays all contained chunks.\n");
-                Console.WriteLine("CriPakTool.exe IN_FILE EXTRACT_ME - Extracts a file.\n");
-                Console.WriteLine("CriPakTool.exe IN_FILE ALL - Extracts all files.\n");
-                Console.WriteLine("CriPakTool.exe IN_FILE REPLACE_ME REPLACE_WITH [OUT_FILE] - Replaces REPLACE_ME with REPLACE_WITH.  Optional output it as a new CPK file otherwise it's replaced.\n");
+                Console.WriteLine("err no args\n");
                 return;
             }
 
-            string cpk_name = args[0];
+            bool doExtract = false;
+            bool doReplace = false;
+            bool doDisplay = false;
+            string outDir = ".";
+            string inFile = "";
+            string outFile = "";
+            string replaceMe = "";
+            string replaceWith = "";
+
+            for (int i = 0; i < args.Length; i++)
+            {
+                string option =  args[i];
+                if (option[0] == '-')
+                {
+                    switch (option[1])
+                    {
+                        case 'x': doExtract = true; break;
+                        case 'r': doReplace = true; replaceMe = args[i + 1]; replaceWith = args[i + 2]; break;
+                        case 'l': doDisplay = true; break;
+                        case 'd': outDir = args[i + 1]; break;
+                        case 'i': inFile = args[i + 1]; break;
+                        case 'o': outFile = args[i + 1]; break;
+                        default:
+                            Console.WriteLine("CriPakTool Usage:");
+                            Console.WriteLine(" -l - Displays all contained chunks.");
+                            Console.WriteLine(" -x - Extracts all files.");
+                            Console.WriteLine(" -r REPLACE_ME REPLACE_WITH - Replaces REPLACE_ME with REPLACE_WITH.");
+                            Console.WriteLine(" -o OUT_FILE - Set output file.");
+                            Console.WriteLine(" -d OUT_DIR - Set output directory.");
+                            Console.WriteLine(" -i IN_FILE - Set input file.");
+                            break;
+                    }
+                }
+             }
+            if (!(doExtract || doReplace || doDisplay)) { //Lazy sanity checking for now
+                Console.WriteLine("no? \n");
+                return;
+            }
+
+            string cpk_name = inFile;
 
             CPK cpk = new CPK(new Tools());
             cpk.ReadCPK(cpk_name);
 
             BinaryReader oldFile = new BinaryReader(File.OpenRead(cpk_name));
 
-            if (args.Length == 1)
+            if (doDisplay)
             {
                 List<FileEntry> entries = cpk.FileTable.OrderBy(x => x.FileOffset).ToList();
                 for (int i = 0; i < entries.Count; i++)
@@ -38,24 +70,23 @@ namespace CriPakTools
                     Console.WriteLine(((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName);
                 }
             }
-            else if (args.Length == 2)
+            else if (doExtract)
             {
-                string extractMe = args[1];
 
                 List<FileEntry> entries = null;
 
-                entries = (extractMe.ToUpper() == "ALL") ? cpk.FileTable.Where(x => x.FileType == "FILE").ToList() : cpk.FileTable.Where(x => ((x.DirName != null) ? x.DirName + "/" : "") + x.FileName.ToString().ToLower() == extractMe.ToLower()).ToList();
+                entries = cpk.FileTable.Where(x => x.FileType == "FILE").ToList();
 
                 if (entries.Count == 0)
                 {
-                    Console.WriteLine("Cannot find " + extractMe + ".");
+                    Console.WriteLine("err while extracting.");
                 }
 
                 for (int i = 0; i < entries.Count; i++)
                 {
                     if (!String.IsNullOrEmpty((string)entries[i].DirName))
                     {
-                        Directory.CreateDirectory(entries[i].DirName.ToString());
+                        Directory.CreateDirectory(outDir + "/" + entries[i].DirName.ToString());
                     }
 
                     oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
@@ -66,30 +97,22 @@ namespace CriPakTools
                     if (isComp == "CRILAYLA")
                     {
                         int size = Int32.Parse((entries[i].ExtractSize ?? entries[i].FileSize).ToString());
-                        chunk = cpk.DecompressCRILAYLA(chunk, size);
+                        if (size != 0)
+                            chunk = cpk.DecompressCRILAYLA(chunk, size);
                     }
 
-                    File.WriteAllBytes(((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName.ToString(), chunk);
+                    File.WriteAllBytes(outDir + "/" + ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName.ToString(), chunk);
                 }
             }
             else
             {
-                if (args.Length < 3)
-                {
-                    Console.WriteLine("Usage for insertion CriPakTools IN_CPK REPLACE_THIS REPLACE_WITH [OUT_CPK]");
-                    return;
-                }
 
-                string ins_name = args[1];
-                string replace_with = args[2];
+                string ins_name = replaceMe;
+                string replace_with = replaceWith;
 
                 FileInfo fi = new FileInfo(cpk_name);
 
-                string outputName = fi.FullName + ".tmp";
-                if (args.Length >= 4)
-                {
-                    outputName = fi.DirectoryName + "\\" + args[3];
-                }
+                string outputName = outFile;
 
                 BinaryWriter newCPK = new BinaryWriter(File.OpenWrite(outputName));
 
@@ -159,12 +182,6 @@ namespace CriPakTools
                 newCPK.Close();
                 oldFile.Close();
 
-                if (args.Length < 4)
-                {
-                    File.Delete(cpk_name);
-                    File.Move(outputName, cpk_name);
-                    File.Delete(outputName);
-                }
             }
         }
     }

@@ -598,6 +598,7 @@ namespace CriPakTools
             br.BaseStream.Seek(8, SeekOrigin.Begin); // Skip CRILAYLA
             int uncompressed_size = br.ReadInt32();
             int uncompressed_header_offset = br.ReadInt32();
+
             result = new byte[uncompressed_size + 0x100];
 
             // do some error checks here.........
