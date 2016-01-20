@@ -58,10 +58,23 @@ namespace CriPakTools
                             Console.WriteLine(" -o OUT_FILE - Set output file.");
                             Console.WriteLine(" -d OUT_DIR - Set output directory.");
                             Console.WriteLine(" -i IN_FILE - Set input file.");
+                            Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
                             break;
                     }
                 }
              }
+            if (inFile == "")
+            {
+                Console.WriteLine("ERROR :You must give -i argv");
+                return;
+            }
+
+            if (!File.Exists(inFile))
+            {
+                Console.WriteLine("ERROR :INPUT FILE NOT EXISTS");
+                return;
+            }
+
             if (!(doExtract || doReplace || doDisplay || doBatchReplace))
             { //Lazy sanity checking for now
                 Console.WriteLine("no? \n");
