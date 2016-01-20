@@ -1,4 +1,14 @@
-CriPakTools
+CriPakTools-mod
+===========
+forked from uyjulian/CriPakTools
+
+Add Batch Mode
+
+Still need to do:
+*Add GUI
+
+
+
 ===========
 
 Tool to extract/update contents of CRIWARE's CPK archive format. (aka CRI FileMajik)  
@@ -15,3 +25,4 @@ TODO:
 * Add more error checking
 * Clean up code
 * Add option to create an archive
+
