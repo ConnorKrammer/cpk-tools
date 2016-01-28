@@ -22,6 +22,7 @@ namespace CriPakTools
                 Console.WriteLine(" -d OUT_DIR - Set output directory.");
                 Console.WriteLine(" -i IN_FILE - Set input file.");
                 Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
+                Console.WriteLine(" -h HELP");
                 return;
             }
 
@@ -50,6 +51,28 @@ namespace CriPakTools
                         case 'i': inFile = args[i + 1]; break;
                         case 'o': outFile = args[i + 1]; break;
                         case 'b': doBatchReplace = true; batch_text_name = args[i + 1]; break;
+                        case 'h': 
+                            Console.WriteLine("CriPakTool Usage:");
+                            Console.WriteLine(" -l - Displays all contained chunks.");
+                            Console.WriteLine(" -x - Extracts all files.");
+                            Console.WriteLine(" -r REPLACE_ME REPLACE_WITH - Replaces REPLACE_ME with REPLACE_WITH.");
+                            Console.WriteLine(" -o OUT_FILE - Set output file.");
+                            Console.WriteLine(" -d OUT_DIR - Set output directory.");
+                            Console.WriteLine(" -i IN_FILE - Set input file.");
+                            Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
+                            Console.WriteLine(" -h HELP");
+                            Console.WriteLine("    [Extract files from cpk]");
+                            Console.WriteLine("    CriPakTool.exe -x -i xxx.cpk -d xxx.cpk_unpacked");
+                            Console.WriteLine("    [Display files from cpk]");
+                            Console.WriteLine("    CriPakTool.exe -l -i xxx.cpk");
+                            Console.WriteLine("    [Batch Replace files into cpk]");
+                            Console.WriteLine("    CriPakTool.exe -b filelist.txt -i xxx.cpk -o xxx_patched.cpk");
+                            Console.WriteLine("    //e.g. FILELIST.TXT");
+                            Console.WriteLine("    original_file_name(in cpk),patch_file_name(in folder)");
+                            Console.WriteLine("    /HD_font_a.ftx,patch/BOOT.cpk_unpacked/HD_font_a.ftx");
+                            Console.WriteLine("    OTHER/ICON0.PNG,patch/BOOT.cpk_unpacked/OTHER/ICON0.PNG");
+                            Console.WriteLine("...");
+                            return;
                         default:
                             Console.WriteLine("CriPakTool Usage:");
                             Console.WriteLine(" -l - Displays all contained chunks.");
@@ -60,6 +83,7 @@ namespace CriPakTools
                             Console.WriteLine(" -i IN_FILE - Set input file.");
                             Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
                             break;
+
                     }
                 }
              }
@@ -120,18 +144,27 @@ namespace CriPakTools
                     }
 
                     oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
+
                     string isComp = Encoding.ASCII.GetString(oldFile.ReadBytes(8));
                     oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
 
                     byte[] chunk = oldFile.ReadBytes(Int32.Parse(entries[i].FileSize.ToString()));
+                    Console.WriteLine("FileName :{0}\n    FileOffset:{1:x8}    ExtractSize:{2:x8}   FileSize:{3:x8}", 
+                                                                            entries[i].FileName.ToString(),
+                                                                            (long)entries[i].FileOffset, 
+                                                                            entries[i].ExtractSize, 
+                                                                            entries[i].FileSize);
                     if (isComp == "CRILAYLA")
                     {
+                        Console.WriteLine("Got CRILAYLA !");
                         int size = Int32.Parse((entries[i].ExtractSize ?? entries[i].FileSize).ToString());
+
                         if (size != 0)
                             chunk = cpk.DecompressCRILAYLA(chunk, size);
                     }
 
                     File.WriteAllBytes(outDir + "/" + ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName.ToString(), chunk);
+
                 }
             }
             else if (doBatchReplace)

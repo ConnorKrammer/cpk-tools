@@ -173,20 +173,25 @@ namespace CriPakTools
 
         public bool ReadTOC(EndianReader br, ulong TocOffset, ulong ContentOffset)
         {
+            ulong fTocOffset = TocOffset;
             ulong add_offset = 0;
 
+            if (fTocOffset > (ulong)0x800)
+                fTocOffset = (ulong)0x800;
+            
+
             if (ContentOffset < 0)
-                add_offset = TocOffset;
+                add_offset = fTocOffset;
             else
             {
                 if (TocOffset < 0)
                     add_offset = ContentOffset;
                 else
                 {
-                    if (ContentOffset < TocOffset)
+                    if (ContentOffset < fTocOffset)
                         add_offset = ContentOffset;
                     else
-                        add_offset = TocOffset;
+                        add_offset = fTocOffset;
                 }
             }
 
