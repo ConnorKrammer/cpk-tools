@@ -289,7 +289,7 @@ namespace CriPakTools
                         if (entries[i].FileName.ToString() != ins_name)
                         {
                             oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
-                            
+                            Console.WriteLine("{0},{1}", entries[i].FileName, entries[i].FileType);
                             entries[i].FileOffset = (ulong)newCPK.BaseStream.Position;
                             cpk.UpdateFileEntry(entries[i]);
 
@@ -317,6 +317,7 @@ namespace CriPakTools
                     }
                     else
                     {
+                        Console.WriteLine("{0},{1}", entries[i].FileName, entries[i].FileType);
                         // Content is special.... just update the position
                         cpk.UpdateFileEntry(entries[i]);
                     }

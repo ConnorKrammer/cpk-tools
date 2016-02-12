@@ -267,6 +267,12 @@ namespace CriPakTools
 
             cpk.BaseStream.Seek(0x800 - 6, SeekOrigin.Begin);
             cpk.Write(Encoding.ASCII.GetBytes("(c)CRI"));
+            if (TocOffset > 0x800)
+            {
+                //部分cpk是从0x2000开始TOC，所以
+                //需要计算 cpk padding
+                cpk.Write(new byte[TocOffset - 0x800]);
+            }
         }
 
         public void WriteTOC(BinaryWriter cpk)
@@ -294,7 +300,16 @@ namespace CriPakTools
             if (position != 0xffffffffffffffff)
             {
                 cpk.BaseStream.Seek((long)position, SeekOrigin.Begin);
-                byte[] encrypted = DecryptUTF(packet); // Yes it says decrypt...
+                byte[] encrypted;
+                if (isUtfEncrypted == true)
+                {
+                    encrypted = DecryptUTF(packet); // Yes it says decrypt...
+                }
+                else
+                {
+                    encrypted = packet;
+                }
+                 
                 cpk.Write(Encoding.ASCII.GetBytes(ID));
                 cpk.Write((Int32)0);
                 cpk.Write((UInt64)encrypted.Length);
@@ -523,7 +538,14 @@ namespace CriPakTools
                 return false;
             }
 
-            br.BaseStream.Seek(0xC, SeekOrigin.Current); //skip header data
+            //br.BaseStream.Seek(0xC, SeekOrigin.Current); //skip header data
+            ReadUTFData(br);
+
+            GTOC_packet = utf_packet;
+            FileEntry gtoc_entry = FileTable.Where(x => x.FileName.ToString() == "GTOC_HDR").Single();
+            gtoc_entry.Encrypted = isUtfEncrypted;
+            gtoc_entry.FileSize = GTOC_packet.Length;
+
 
             return true;
         }
