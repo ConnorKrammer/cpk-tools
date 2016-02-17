@@ -21,6 +21,7 @@ namespace CriPakTools
                 Console.WriteLine(" -o OUT_FILE - Set output file.");
                 Console.WriteLine(" -d OUT_DIR - Set output directory.");
                 Console.WriteLine(" -i IN_FILE - Set input file.");
+                Console.WriteLine(" -c - use CRILAYLA compression");
                 Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
                 Console.WriteLine(" -h HELP");
                 return;
@@ -29,6 +30,7 @@ namespace CriPakTools
             bool doExtract = false;
             bool doReplace = false;
             bool doDisplay = false;
+            bool bUseCompress = false;
             bool doBatchReplace = false; //添加批量替换功能
             string outDir = ".";
             string inFile = "";
@@ -45,6 +47,7 @@ namespace CriPakTools
                     switch (option[1])
                     {
                         case 'x': doExtract = true; break;
+                        case 'c': bUseCompress = true; break;
                         case 'r': doReplace = true; replaceMe = args[i + 1]; replaceWith = args[i + 2]; break;
                         case 'l': doDisplay = true; break;
                         case 'd': outDir = args[i + 1]; break;
@@ -245,7 +248,7 @@ namespace CriPakTools
                             entries[i].FileOffset = (ulong)newCPK.BaseStream.Position;
                             int o_ext_size = Int32.Parse((entries[i].ExtractSize).ToString());
                             int o_com_size = Int32.Parse((entries[i].FileSize).ToString());
-                            if ((o_com_size < o_ext_size) && entries[i].FileType == "FILE")
+                            if ((o_com_size < o_ext_size) && entries[i].FileType == "FILE" && bUseCompress == true)
                             {
                                 // is compressed
                                 
@@ -351,12 +354,35 @@ namespace CriPakTools
                         }
                         else
                         {
+                            //Got patch file name
+                            Console.WriteLine("{0} Patched.", entries[i].FileName.ToString());
                             byte[] newbie = File.ReadAllBytes(replace_with);
                             entries[i].FileOffset = (ulong)newCPK.BaseStream.Position;
-                            entries[i].FileSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
-                            entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
-                            cpk.UpdateFileEntry(entries[i]);
-                            newCPK.Write(newbie);
+                            int o_ext_size = Int32.Parse((entries[i].ExtractSize).ToString());
+                            int o_com_size = Int32.Parse((entries[i].FileSize).ToString());
+                            if ((o_com_size < o_ext_size) && entries[i].FileType == "FILE" && bUseCompress == true)
+                            {
+                                // is compressed
+
+                                byte[] dest_comp = cpk.CompressCRILAYLA(newbie);
+
+                                entries[i].FileSize = Convert.ChangeType(dest_comp.Length, entries[i].FileSizeType);
+                                entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
+                                cpk.UpdateFileEntry(entries[i]);
+                                newCPK.Write(dest_comp);
+                                Console.WriteLine("Compressing {0:x8} >> {1:x8}", newbie.Length, dest_comp.Length);
+                            }
+
+                            else
+                            {
+
+                                entries[i].FileSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
+                                entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
+                                cpk.UpdateFileEntry(entries[i]);
+                                newCPK.Write(newbie);
+                            }
+
+
                             if ((newCPK.BaseStream.Position % 0x800) > 0 && i < entries.Count - 1)
                             {
                                 long cur_pos = newCPK.BaseStream.Position;
