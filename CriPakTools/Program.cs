@@ -58,18 +58,20 @@ namespace CriPakTools
                             Console.WriteLine("CriPakTool Usage:");
                             Console.WriteLine(" -l - Displays all contained chunks.");
                             Console.WriteLine(" -x - Extracts all files.");
+                            Console.WriteLine(" -c - use CRILAYLA compression");
                             Console.WriteLine(" -r REPLACE_ME REPLACE_WITH - Replaces REPLACE_ME with REPLACE_WITH.");
                             Console.WriteLine(" -o OUT_FILE - Set output file.");
                             Console.WriteLine(" -d OUT_DIR - Set output directory.");
                             Console.WriteLine(" -i IN_FILE - Set input file.");
                             Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
                             Console.WriteLine(" -h HELP");
+
                             Console.WriteLine("    [Extract files from cpk]");
                             Console.WriteLine("    CriPakTool.exe -x -i xxx.cpk -d xxx.cpk_unpacked");
                             Console.WriteLine("    [Display files from cpk]");
                             Console.WriteLine("    CriPakTool.exe -l -i xxx.cpk");
                             Console.WriteLine("    [Batch Replace files into cpk]");
-                            Console.WriteLine("    CriPakTool.exe -b filelist.txt -i xxx.cpk -o xxx_patched.cpk");
+                            Console.WriteLine("    CriPakTool.exe -b filelist.txt -c -i xxx.cpk -o xxx_patched.cpk");
                             Console.WriteLine("    //e.g. FILELIST.TXT");
                             Console.WriteLine("    original_file_name(in cpk),patch_file_name(in folder)");
                             Console.WriteLine("    /HD_font_a.ftx,patch/BOOT.cpk_unpacked/HD_font_a.ftx");
@@ -80,6 +82,7 @@ namespace CriPakTools
                             Console.WriteLine("CriPakTool Usage:");
                             Console.WriteLine(" -l - Displays all contained chunks.");
                             Console.WriteLine(" -x - Extracts all files.");
+                            Console.WriteLine(" -c - use CRILAYLA compression");
                             Console.WriteLine(" -r REPLACE_ME REPLACE_WITH - Replaces REPLACE_ME with REPLACE_WITH.");
                             Console.WriteLine(" -o OUT_FILE - Set output file.");
                             Console.WriteLine(" -d OUT_DIR - Set output directory.");
