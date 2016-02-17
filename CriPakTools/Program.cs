@@ -243,10 +243,30 @@ namespace CriPakTools
                             Console.WriteLine("{0} Patched.", currentName.ToString());
                             byte[] newbie = File.ReadAllBytes(replace_with);
                             entries[i].FileOffset = (ulong)newCPK.BaseStream.Position;
-                            entries[i].FileSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
-                            entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
-                            cpk.UpdateFileEntry(entries[i]);
-                            newCPK.Write(newbie);
+                            int o_ext_size = Int32.Parse((entries[i].ExtractSize).ToString());
+                            int o_com_size = Int32.Parse((entries[i].FileSize).ToString());
+                            if ((o_com_size < o_ext_size) && entries[i].FileType == "FILE")
+                            {
+                                // is compressed
+                                
+                                byte[] dest_comp = cpk.CompressCRILAYLA(newbie);
+                                
+                                entries[i].FileSize = Convert.ChangeType(dest_comp.Length, entries[i].FileSizeType);
+                                entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
+                                cpk.UpdateFileEntry(entries[i]);
+                                newCPK.Write(dest_comp);
+                                Console.WriteLine("Compressing {0:x8} >> {1:x8}", newbie.Length, dest_comp.Length);
+                            }
+                            
+                            else
+                            {
+
+                                entries[i].FileSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
+                                entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
+                                cpk.UpdateFileEntry(entries[i]);
+                                newCPK.Write(newbie);
+                            }
+                            
 
                             if ((newCPK.BaseStream.Position % 0x800) > 0 && i < entries.Count - 1)
                             {
@@ -267,12 +287,11 @@ namespace CriPakTools
                     }
                 }
 
-                
+                cpk.WriteCPK(newCPK);
                 cpk.WriteITOC(newCPK);
                 cpk.WriteTOC(newCPK);
                 cpk.WriteETOC(newCPK, cpk.EtocOffset);
                 cpk.WriteGTOC(newCPK);
-                cpk.WriteCPK(newCPK);
 
                 newCPK.Close();
                 oldFile.Close();
