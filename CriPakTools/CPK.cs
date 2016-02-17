@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace CriPakTools
 {
@@ -285,9 +286,9 @@ namespace CriPakTools
             WritePacket(cpk, "ITOC", ItocOffset, ITOC_packet);
         }
 
-        public void WriteETOC(BinaryWriter cpk)
+        public void WriteETOC(BinaryWriter cpk, ulong currentEtocOffset)
         {
-            WritePacket(cpk, "ETOC", EtocOffset, ETOC_packet);
+            WritePacket(cpk, "ETOC", currentEtocOffset, ETOC_packet);
         }
 
         public void WriteGTOC(BinaryWriter cpk)
@@ -311,7 +312,7 @@ namespace CriPakTools
                 }
                  
                 cpk.Write(Encoding.ASCII.GetBytes(ID));
-                cpk.Write((Int32)0);
+                cpk.Write((Int32)0xff);
                 cpk.Write((UInt64)encrypted.Length);
                 cpk.Write(encrypted);
             }
@@ -615,6 +616,7 @@ namespace CriPakTools
             return result;
         }
 
+
         public byte[] DecompressCRILAYLA(byte[] input, int USize)
         {
             byte[] result;// = new byte[USize];
@@ -849,6 +851,9 @@ namespace CriPakTools
                     case "ETOC":
                         updateMe = ETOC_packet;
                         break;
+                    case "GTOC":
+                        updateMe = GTOC_packet;
+                        break;
                     default:
                         throw new Exception("I need to implement this TOC!");
                         break;
@@ -865,12 +870,12 @@ namespace CriPakTools
 
                 //Update FileOffset
                 if (fileEntry.FileOffsetPos > 0)
-                    UpdateValue(ref updateMe, fileEntry.FileOffset - (ulong)((fileEntry.TOCName == "TOC") ? 0x800 : 0), fileEntry.FileOffsetPos, fileEntry.FileOffsetType);
+                    UpdateValue(ref updateMe, fileEntry.FileOffset - (ulong)TocOffset, fileEntry.FileOffsetPos, fileEntry.FileOffsetType);
 
                 switch (fileEntry.TOCName)
                 {
                     case "CPK":
-                        updateMe = CPK_packet;
+                        CPK_packet = updateMe;
                         break;
                     case "TOC":
                         TOC_packet = updateMe;
@@ -880,6 +885,9 @@ namespace CriPakTools
                         break;
                     case "ETOC":
                         updateMe = ETOC_packet;
+                        break;
+                    case "GTOC":
+                        updateMe = GTOC_packet;
                         break;
                     default:
                         throw new Exception("I need to implement this TOC!");
@@ -927,6 +935,7 @@ namespace CriPakTools
 
             MemoryStream myStream = (MemoryStream)toc.BaseStream;
             packet = myStream.ToArray();
+
         }
 
         public bool isUtfEncrypted { get; set; }

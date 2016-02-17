@@ -117,7 +117,12 @@ namespace CriPakTools
                 List<FileEntry> entries = cpk.FileTable.OrderBy(x => x.FileOffset).ToList();
                 for (int i = 0; i < entries.Count; i++)
                 {
-                    Console.WriteLine(((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName);
+                    Console.WriteLine("FILE ID:{0},File Name:{1},File Type:{5},FileOffset:{2:x8},Extract Size:{3:x8},Chunk Size:{4:x8}", entries[i].ID, 
+                                                                (((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName) ,
+                                                                entries[i].FileOffset,
+                                                                entries[i].ExtractSize,
+                                                                entries[i].FileSize,
+                                                                entries[i].FileType);
                 }
             }
             else if (doExtract)
@@ -149,7 +154,7 @@ namespace CriPakTools
                     oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
 
                     byte[] chunk = oldFile.ReadBytes(Int32.Parse(entries[i].FileSize.ToString()));
-                    Console.WriteLine("FileName :{0}\n    FileOffset:{1:x8}    ExtractSize:{2:x8}   FileSize:{3:x8}", 
+                    Console.WriteLine("FileName :{0}\n    FileOffset:{1:x8}    ExtractSize:{2:x8}   ChunkSize:{3:x8}", 
                                                                             entries[i].FileName.ToString(),
                                                                             (long)entries[i].FileOffset, 
                                                                             entries[i].ExtractSize, 
@@ -199,38 +204,61 @@ namespace CriPakTools
                             }
                         }
 
+                        string currentName = ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName;
 
-                        if (!batch_file_list.Keys.Contains(entries[i].FileName.ToString()))
+                        if (!batch_file_list.Keys.Contains(currentName.ToString()))
                             //如果不在表中，复制原始数据
                         {
                             oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
 
                             entries[i].FileOffset = (ulong)newCPK.BaseStream.Position;
+
+                            if (entries[i].FileName.ToString() == "ETOC_HDR")
+                            {
+                                
+                                cpk.EtocOffset = entries[i].FileOffset;
+                                Console.WriteLine("Fix ETOC_OFFSET to {0:x8}", cpk.EtocOffset);
+
+                            }
+
                             cpk.UpdateFileEntry(entries[i]);
 
                             byte[] chunk = oldFile.ReadBytes(Int32.Parse(entries[i].FileSize.ToString()));
                             newCPK.Write(chunk);
+
+                            if ((newCPK.BaseStream.Position % 0x800) > 0 && i < entries.Count - 1)
+                            {
+                                long cur_pos = newCPK.BaseStream.Position;
+                                for (int j = 0; j < (0x800 - (cur_pos % 0x800)); j++)
+                                {
+                                    newCPK.Write((byte)0);
+                                }
+                            }
+                            
                         }
                         else
                         {
-                            string replace_with = batch_file_list[entries[i].FileName.ToString()];
+                            string replace_with = batch_file_list[currentName.ToString()];
                             //Got patch file name
+                            Console.WriteLine("{0} Patched.", currentName.ToString());
                             byte[] newbie = File.ReadAllBytes(replace_with);
                             entries[i].FileOffset = (ulong)newCPK.BaseStream.Position;
                             entries[i].FileSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
                             entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
                             cpk.UpdateFileEntry(entries[i]);
                             newCPK.Write(newbie);
-                        }
 
-                        if ((newCPK.BaseStream.Position % 0x800) > 0)
-                        {
-                            long cur_pos = newCPK.BaseStream.Position;
-                            for (int j = 0; j < (0x800 - (cur_pos % 0x800)); j++)
+                            if ((newCPK.BaseStream.Position % 0x800) > 0 && i < entries.Count - 1)
                             {
-                                newCPK.Write((byte)0);
+                                long cur_pos = newCPK.BaseStream.Position;
+                                for (int j = 0; j < (0x800 - (cur_pos % 0x800)); j++)
+                                {
+                                    newCPK.Write((byte)0);
+                                }
                             }
                         }
+
+                        
                     }
                     else
                     {
@@ -239,17 +267,15 @@ namespace CriPakTools
                     }
                 }
 
-                cpk.WriteCPK(newCPK);
+                
                 cpk.WriteITOC(newCPK);
                 cpk.WriteTOC(newCPK);
-                cpk.WriteETOC(newCPK);
+                cpk.WriteETOC(newCPK, cpk.EtocOffset);
                 cpk.WriteGTOC(newCPK);
+                cpk.WriteCPK(newCPK);
 
                 newCPK.Close();
                 oldFile.Close();
-
-
-                
 
 
             }
@@ -295,6 +321,14 @@ namespace CriPakTools
 
                             byte[] chunk = oldFile.ReadBytes(Int32.Parse(entries[i].FileSize.ToString()));
                             newCPK.Write(chunk);
+                            if ((newCPK.BaseStream.Position % 0x800) > 0 && i < entries.Count - 1)
+                            {
+                                long cur_pos = newCPK.BaseStream.Position;
+                                for (int j = 0; j < (0x800 - (cur_pos % 0x800)); j++)
+                                {
+                                    newCPK.Write((byte)0);
+                                }
+                            }
                         }
                         else
                         {
@@ -304,16 +338,17 @@ namespace CriPakTools
                             entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
                             cpk.UpdateFileEntry(entries[i]);
                             newCPK.Write(newbie);
-                        }
-
-                        if ((newCPK.BaseStream.Position % 0x800) > 0)
-                        {
-                            long cur_pos = newCPK.BaseStream.Position;
-                            for (int j = 0; j < (0x800 - (cur_pos % 0x800)); j++)
+                            if ((newCPK.BaseStream.Position % 0x800) > 0 && i < entries.Count - 1)
                             {
-                                newCPK.Write((byte)0);
+                                long cur_pos = newCPK.BaseStream.Position;
+                                for (int j = 0; j < (0x800 - (cur_pos % 0x800)); j++)
+                                {
+                                    newCPK.Write((byte)0);
+                                }
                             }
                         }
+
+                        
                     }
                     else
                     {
@@ -326,7 +361,7 @@ namespace CriPakTools
                 cpk.WriteCPK(newCPK);
                 cpk.WriteITOC(newCPK);
                 cpk.WriteTOC(newCPK);
-                cpk.WriteETOC(newCPK);
+                cpk.WriteETOC(newCPK , cpk.EtocOffset);
                 cpk.WriteGTOC(newCPK);
 
                 newCPK.Close();
