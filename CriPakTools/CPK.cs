@@ -268,7 +268,7 @@ namespace CriPakTools
 
             cpk.BaseStream.Seek(0x800 - 6, SeekOrigin.Begin);
             cpk.Write(Encoding.ASCII.GetBytes("(c)CRI"));
-            if (TocOffset > 0x800)
+            if ((TocOffset > 0x800) && TocOffset < 0x8000)
             {
                 //部分cpk是从0x2000开始TOC，所以
                 //需要计算 cpk padding
@@ -469,7 +469,7 @@ namespace CriPakTools
                 temp.TOCName = "ITOC";
 
                 temp.DirName = null;
-                temp.FileName = id.ToString("D4");
+                temp.FileName = id.ToString() + ".bin" ;
 
                 temp.FileSize = value;
                 temp.FileSizePos = SizePosTable[id];
@@ -727,15 +727,16 @@ namespace CriPakTools
             unsafe
             {
 
-                byte[] bytes = new byte[input.Length];
                 int destLength = (int)input.Length;
-                fixed (byte* dest = bytes)
                 fixed (byte* src = input)
+                fixed (byte* dest = new byte[input.Length])
                 {
 
                     destLength = CRICompress(dest, &destLength, src, input.Length);
                     byte[] arr = new byte[destLength];
                     Marshal.Copy((IntPtr)dest, arr, 0, destLength);
+
+                    
                     return arr;
                 }
             }
@@ -743,6 +744,76 @@ namespace CriPakTools
         }
 
         public byte[] DecompressCRILAYLA(byte[] input, int USize)
+        {
+            byte[] result;// = new byte[USize];
+
+            MemoryStream ms = new MemoryStream(input);
+            EndianReader br = new EndianReader(ms, true);
+
+            br.BaseStream.Seek(8, SeekOrigin.Begin); // Skip CRILAYLA
+            int uncompressed_size = br.ReadInt32();
+            int uncompressed_header_offset = br.ReadInt32();
+
+            result = new byte[uncompressed_size + 0x100];
+
+            // do some error checks here.........
+
+            // copy uncompressed 0x100 header to start of file
+            Array.Copy(input, uncompressed_header_offset + 0x10, result, 0, 0x100);
+
+            int input_end = input.Length - 0x100 - 1;
+            int input_offset = input_end;
+            int output_end = 0x100 + uncompressed_size - 1;
+            byte bit_pool = 0;
+            int bits_left = 0, bytes_output = 0;
+            int[] vle_lens = new int[4] { 2, 3, 5, 8 };
+
+            while (bytes_output < uncompressed_size)
+            {
+                if (get_next_bits(input, ref input_offset, ref  bit_pool, ref bits_left, 1) > 0)
+                {
+                    int backreference_offset = output_end - bytes_output + get_next_bits(input, ref input_offset, ref  bit_pool, ref bits_left, 13) + 3;
+                    int backreference_length = 3;
+                    int vle_level;
+
+                    for (vle_level = 0; vle_level < vle_lens.Length; vle_level++)
+                    {
+                        int this_level = get_next_bits(input, ref input_offset, ref  bit_pool, ref bits_left, vle_lens[vle_level]);
+                        backreference_length += this_level;
+                        if (this_level != ((1 << vle_lens[vle_level]) - 1)) break;
+                    }
+
+                    if (vle_level == vle_lens.Length)
+                    {
+                        int this_level;
+                        do
+                        {
+                            this_level = get_next_bits(input, ref input_offset, ref  bit_pool, ref bits_left, 8);
+                            backreference_length += this_level;
+                        } while (this_level == 255);
+                    }
+
+                    for (int i = 0; i < backreference_length; i++)
+                    {
+                        result[output_end - bytes_output] = result[backreference_offset--];
+                        bytes_output++;
+                    }
+                }
+                else
+                {
+                    // verbatim byte
+                    result[output_end - bytes_output] = (byte)get_next_bits(input, ref input_offset, ref  bit_pool, ref bits_left, 8);
+                    bytes_output++;
+                }
+            }
+
+            br.Close();
+            ms.Close();
+
+            return result;
+        }
+
+        public byte[] DecompressLegacyCRI(byte[] input, int USize)
         {
             byte[] result;// = new byte[USize];
 
@@ -981,7 +1052,7 @@ namespace CriPakTools
                         break;
                     default:
                         throw new Exception("I need to implement this TOC!");
-                        break;
+
                 }
 
 
@@ -1023,7 +1094,7 @@ namespace CriPakTools
                         break;
                     default:
                         throw new Exception("I need to implement this TOC!");
-                        break;
+
                 }
             }
         }

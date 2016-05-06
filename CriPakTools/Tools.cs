@@ -43,6 +43,7 @@ namespace CriPakTools
 
 
             }
+            sr.Close();
 
             return flist;
         }

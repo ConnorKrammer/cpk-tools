@@ -12,8 +12,12 @@ namespace CriPakTools
         {
             if (args.Length == 0)
             {
-                Console.WriteLine("err no args\n");
+                Console.WriteLine("error: no args\n");
                 Console.WriteLine("====================");
+                Console.WriteLine("This tool is based off of code by Falo , Nanashi3 ,esperknight and uyjulian");
+                Console.WriteLine("I forked and added batch reimport and compress code .");
+                Console.WriteLine("Thanks for KenTse 's CRILAYLA compression method");
+                Console.WriteLine("                                     by: wmltogether@gmail.com");
                 Console.WriteLine("CriPakTool Usage:");
                 Console.WriteLine(" -l - Displays all contained chunks.");
                 Console.WriteLine(" -x - Extracts all files.");
@@ -22,6 +26,7 @@ namespace CriPakTools
                 Console.WriteLine(" -d OUT_DIR - Set output directory.");
                 Console.WriteLine(" -i IN_FILE - Set input file.");
                 Console.WriteLine(" -c - use CRILAYLA compression");
+                Console.WriteLine(" -y - use legacy (c)CRI decompression");
                 Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
                 Console.WriteLine(" -h HELP");
                 return;
@@ -32,6 +37,7 @@ namespace CriPakTools
             bool doDisplay = false;
             bool bUseCompress = false;
             bool doBatchReplace = false; //添加批量替换功能
+            bool bUseLegacyCompress = false; //添加旧式解压参数
             string outDir = ".";
             string inFile = "";
             string outFile = "";
@@ -54,6 +60,7 @@ namespace CriPakTools
                         case 'i': inFile = args[i + 1]; break;
                         case 'o': outFile = args[i + 1]; break;
                         case 'b': doBatchReplace = true; batch_text_name = args[i + 1]; break;
+                        case 'y': bUseLegacyCompress = true; break;
                         case 'h': 
                             Console.WriteLine("CriPakTool Usage:");
                             Console.WriteLine(" -l - Displays all contained chunks.");
@@ -171,7 +178,14 @@ namespace CriPakTools
                         int size = Int32.Parse((entries[i].ExtractSize ?? entries[i].FileSize).ToString());
 
                         if (size != 0)
-                            chunk = cpk.DecompressCRILAYLA(chunk, size);
+                            if (bUseLegacyCompress == false)
+                            {
+                                chunk = cpk.DecompressCRILAYLA(chunk, size);
+                            }
+                            else
+                            {
+                                chunk = cpk.DecompressLegacyCRI(chunk, size);
+                            }
                     }
 
                     File.WriteAllBytes(outDir + "/" + ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName.ToString(), chunk);
@@ -212,6 +226,11 @@ namespace CriPakTools
 
                         string currentName = ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName;
 
+                        if (!currentName.Contains("/"))
+                        {
+                            currentName = "/" + currentName;
+                        }
+
                         if (!batch_file_list.Keys.Contains(currentName.ToString()))
                             //如果不在表中，复制原始数据
                         {
@@ -246,7 +265,8 @@ namespace CriPakTools
                         {
                             string replace_with = batch_file_list[currentName.ToString()];
                             //Got patch file name
-                            Console.WriteLine("{0} Patched.", currentName.ToString());
+                            Console.WriteLine("Patching: {0}", currentName.ToString());
+
                             byte[] newbie = File.ReadAllBytes(replace_with);
                             entries[i].FileOffset = (ulong)newCPK.BaseStream.Position;
                             int o_ext_size = Int32.Parse((entries[i].ExtractSize).ToString());
@@ -254,19 +274,20 @@ namespace CriPakTools
                             if ((o_com_size < o_ext_size) && entries[i].FileType == "FILE" && bUseCompress == true)
                             {
                                 // is compressed
-                                
+                                Console.Write("Compressing data:{0:x8}", newbie.Length);
+
                                 byte[] dest_comp = cpk.CompressCRILAYLA(newbie);
                                 
                                 entries[i].FileSize = Convert.ChangeType(dest_comp.Length, entries[i].FileSizeType);
                                 entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
                                 cpk.UpdateFileEntry(entries[i]);
                                 newCPK.Write(dest_comp);
-                                Console.WriteLine("Compressing {0:x8} >> {1:x8}", newbie.Length, dest_comp.Length);
+                                Console.Write(">> {0:x8}\r\n", dest_comp.Length);
                             }
                             
                             else
                             {
-
+                                Console.Write("Storing data:{0:x8}\r\n", newbie.Length);
                                 entries[i].FileSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
                                 entries[i].ExtractSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
                                 cpk.UpdateFileEntry(entries[i]);
