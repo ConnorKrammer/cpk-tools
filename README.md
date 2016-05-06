@@ -2,10 +2,20 @@ CriPakTools-mod
 ===========
 forked from uyjulian/CriPakTools
 
-Add Batch Mode
+This tool is based off of code by Falo , Nanashi3 ,esperknight and uyjulian
 
-Still need to do:
-*Add GUI
+I forked and added batch reimport and compress code .
+
+Thanks for KenTse 's CRILAYLA compression method
+
+
+* Add Batch Mode
+* Add compression option
+* Fix GTOC & ETOC
+* Fix CPK header
+
+* Still need to do:
+* Add GUI
 
 
 
