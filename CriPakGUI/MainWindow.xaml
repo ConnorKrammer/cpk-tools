@@ -1,0 +1,62 @@
+﻿<Window x:Class="CriPakGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Criware CriPak GUI" Height="360" Width="640" ResizeMode="CanResizeWithGrip" SizeToContent="WidthAndHeight" MinWidth="640" MinHeight="358" Icon="Resources/1.ico" MaxHeight="640">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition Width="0*"/>
+            <ColumnDefinition/>
+        </Grid.ColumnDefinitions>
+        <StatusBar Grid.ColumnSpan="3" Height="25" VerticalAlignment="Bottom">
+            <StatusBarItem Content="CPK Loaded:"/>
+            <StatusBarItem x:Name="status_cpkname" Content="cpk_name"/>
+            <StatusBarItem Content=" " Width="40"/>
+            <StatusBarItem x:Name="status_tips" Content=" " Height="25" VerticalAlignment="Top"/>
+            <StatusBarItem x:Name="status_cpkmsg" Content="0 file(s) registered." HorizontalContentAlignment="Right"/>
+        </StatusBar>
+        <Menu Grid.ColumnSpan="3" Height="25" VerticalAlignment="Top">
+            <MenuItem Header="_File">
+                <MenuItem x:Name="menu_openfile" Header="Open CPK" Click="menu_openfile_Click"/>
+                <MenuItem x:Name="menu_importAssets" Header="Import Assets" Click="menu_importAssets_Click"/>
+                <MenuItem x:Name="menu_savefile" Header="Save As..." Click="menu_savefile_Click"/>
+            </MenuItem>
+            <MenuItem Header="_Tools">
+                <MenuItem Header="Make filelist.csv"/>
+
+            </MenuItem>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <Separator Margin="0"/>
+            <MenuItem Header="About" HorizontalContentAlignment="Right" HorizontalAlignment="Right" FlowDirection="RightToLeft">
+                <MenuItem Header="About CriPak GUI"/>
+            </MenuItem>
+        </Menu>
+        <DataGrid x:Name="datagrid_cpk" CanUserAddRows="False" Margin="0,62,0,30" Grid.Column="2" VerticalScrollBarVisibility="Visible" IsReadOnly="True" FrozenColumnCount="7" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" AlternationCount="9" RowHeight="18" AreRowDetailsFrozen="True" CanUserResizeRows="False" MaxHeight="500" HorizontalContentAlignment="Stretch">
+            <DataGrid.Columns>
+                <DataGridTextColumn x:Name="colume_number" Header="No." MinWidth="40" Binding="{Binding id}"/>
+                <DataGridTextColumn x:Name="colume_filename" Header="FileName" MinWidth="200" Binding="{Binding FileName}"/>
+                <DataGridTextColumn x:Name="colume_offset" Header="Offset" MinWidth="100" Binding="{Binding FileOffset , StringFormat=\{0:X8\}}"/>
+                <DataGridTextColumn x:Name="colume_size" Header="Data Size" MinWidth="80" Binding="{Binding FileSize}"/>
+                <DataGridTextColumn x:Name="colume_extractsize" Header="Original Size" MinWidth="80" Binding="{Binding ExtractSize}"/>
+                <DataGridTextColumn x:Name="culume_type" Header="Data Type" MinWidth="40" Binding="{Binding FileType}"/>
+                <DataGridTextColumn x:Name="colume_pt" Header="%" MinWidth="40" Binding="{Binding Pt}"/>
+            </DataGrid.Columns>
+        </DataGrid>
+        <Grid Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="37" Margin="0,25,0,0" VerticalAlignment="Top" Width="632" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+            <Button Content="Import Assets" HorizontalAlignment="Left" Margin="31,8,0,0" VerticalAlignment="Top" Width="110"/>
+        </Grid>
+    </Grid>
+</Window>

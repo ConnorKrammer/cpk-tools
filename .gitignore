@@ -187,3 +187,5 @@ FakesAssemblies/
 GeneratedArtifacts/
 _Pvt_Extensions/
 ModelManifest.xml
+/CriPakGUI/Resources/Ookii.Dialogs.chm
+/CriPakGUI/Resources/Ookii.Dialogs.dll
