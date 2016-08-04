@@ -3,15 +3,23 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
+using System.Runtime.InteropServices;
 
 namespace CriPakTools
 {
     class Program
     {
+        [DllImport("user32.dll", EntryPoint = "MessageBox")]
+        public static extern int MsgBox(IntPtr hwnd, string text, string caption, uint type);
+        public static void ShowMsgBox(string msg)
+        {
+            MsgBox(IntPtr.Zero, msg, "CriPakTools", 1);
+        }
         static void Main(string[] args)
         {
             if (args.Length == 0)
             {
+
                 Console.WriteLine("error: no args\n");
                 Console.WriteLine("====================");
                 Console.WriteLine("This tool is based off of code by Falo , Nanashi3 ,esperknight and uyjulian");
@@ -29,6 +37,8 @@ namespace CriPakTools
                 Console.WriteLine(" -y - use legacy (c)CRI decompression");
                 Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
                 Console.WriteLine(" -h HELP");
+                Program.ShowMsgBox("Error:  \n  Please use this program in console!");
+                
                 return;
             }
 
