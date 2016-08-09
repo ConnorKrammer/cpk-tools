@@ -10,16 +10,29 @@
         </Grid.ColumnDefinitions>
         <StatusBar Grid.ColumnSpan="3" Height="25" VerticalAlignment="Bottom">
             <StatusBarItem Content="CPK Loaded:"/>
-            <StatusBarItem x:Name="status_cpkname" Content="cpk_name"/>
-            <StatusBarItem Content=" " Width="40"/>
+            <StatusBarItem x:Name="status_cpkname" Content=" "/>
+            <StatusBarItem x:Name="status_progress" Content=" " Width="40"/>
             <StatusBarItem x:Name="status_tips" Content=" " Height="25" VerticalAlignment="Top"/>
+            <ProgressBar x:Name="progressbar0" Height="15" Width="287"/>
             <StatusBarItem x:Name="status_cpkmsg" Content="0 file(s) registered." HorizontalContentAlignment="Right"/>
         </StatusBar>
         <Menu Grid.ColumnSpan="3" Height="25" VerticalAlignment="Top">
             <MenuItem Header="_File">
-                <MenuItem x:Name="menu_openfile" Header="Open CPK" Click="menu_openfile_Click"/>
-                <MenuItem x:Name="menu_importAssets" Header="Import Assets" Click="menu_importAssets_Click"/>
-                <MenuItem x:Name="menu_savefile" Header="Save As..." Click="menu_savefile_Click"/>
+                <MenuItem x:Name="menu_openfile" Header="Open CPK" Click="menu_openfile_Click" >
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="Resources/openFile.ico"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="menu_importAssets" Header="Patch CPK..." Click="menu_importAssets_Click" >
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="Resources/importAssets.ico"/>
+                    </MenuItem.Icon>
+                </MenuItem>
+                <MenuItem x:Name="menu_savefiles" Header="Extract CPK..." Click="menu_savefiles_Click" >
+                    <MenuItem.Icon>
+                        <Image Width="16" Height="16" Source="Resources/saveFiles.ico"/>
+                    </MenuItem.Icon>
+                </MenuItem>
             </MenuItem>
             <MenuItem Header="_Tools">
                 <MenuItem Header="Make filelist.csv"/>
@@ -40,11 +53,12 @@
             <Separator Margin="0"/>
             <Separator Margin="0"/>
             <Separator Margin="0"/>
-            <MenuItem Header="About" HorizontalContentAlignment="Right" HorizontalAlignment="Right" FlowDirection="RightToLeft">
-                <MenuItem Header="About CriPak GUI"/>
+            <Separator Margin="0"/>
+            <MenuItem Header="About" HorizontalContentAlignment="Right" HorizontalAlignment="Right" FlowDirection="RightToLeft" Width="50">
+                <MenuItem x:Name="menu_aboutgui" Header="About CriPak GUI" Click="menu_aboutgui_Click" />
             </MenuItem>
         </Menu>
-        <DataGrid x:Name="datagrid_cpk" CanUserAddRows="False" Margin="0,62,0,30" Grid.Column="2" VerticalScrollBarVisibility="Visible" IsReadOnly="True" FrozenColumnCount="7" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" AlternationCount="9" RowHeight="18" AreRowDetailsFrozen="True" CanUserResizeRows="False" MaxHeight="500" HorizontalContentAlignment="Stretch">
+        <DataGrid x:Name="datagrid_cpk" CanUserAddRows="False" Margin="0,62,0,30" Grid.Column="2" VerticalScrollBarVisibility="Visible" IsReadOnly="True" FrozenColumnCount="7" AutoGenerateColumns="False" CanUserResizeColumns="False" CanUserReorderColumns="False" CanUserSortColumns="False" AlternationCount="2" RowHeight="17" AreRowDetailsFrozen="True" CanUserResizeRows="False" MaxHeight="500" HorizontalContentAlignment="Stretch" IsTextSearchEnabled="True" RowBackground="#FFF1F7F4">
             <DataGrid.Columns>
                 <DataGridTextColumn x:Name="colume_number" Header="No." MinWidth="40" Binding="{Binding id}"/>
                 <DataGridTextColumn x:Name="colume_filename" Header="FileName" MinWidth="200" Binding="{Binding FileName}"/>
@@ -55,8 +69,10 @@
                 <DataGridTextColumn x:Name="colume_pt" Header="%" MinWidth="40" Binding="{Binding Pt}"/>
             </DataGrid.Columns>
         </DataGrid>
-        <Grid Grid.ColumnSpan="3" HorizontalAlignment="Left" Height="37" Margin="0,25,0,0" VerticalAlignment="Top" Width="632" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
-            <Button Content="Import Assets" HorizontalAlignment="Left" Margin="31,8,0,0" VerticalAlignment="Top" Width="110"/>
+        <Grid Grid.ColumnSpan="3" Height="37" Margin="0,25,0,0" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
+            <Button x:Name="button_importassets" Content="Patch CPK" HorizontalAlignment="Left" Margin="142,10,0,0" VerticalAlignment="Top" Width="86" IsEnabled="False" Click="button_importassets_Click"/>
+            <Button x:Name="button_extract" Content="Extract me!" HorizontalAlignment="Left" Margin="37,10,0,0" VerticalAlignment="Top" Width="86" IsEnabled="False" Click="button_extract_Click"/>
+            
         </Grid>
     </Grid>
 </Window>

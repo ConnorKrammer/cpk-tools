@@ -7,6 +7,13 @@ using System.IO;
 
 namespace CriPakGUI
 {
+    public static class myPackage
+    {
+        public static CPK cpk { get; set; }
+        public static string basePath { get; set; }
+        public static string cpk_name { get; set; }
+        public static string baseName { get; set; }
+    }
     public class CPKTable
     {
         public int id { get; set; }
@@ -18,21 +25,24 @@ namespace CriPakGUI
         public string FileType { get; set; }
         public float Pt { get; set; }
     }
+
     public class cpkwrapper
     {
-        public CPK cpk;
+
         public int nums = 0;
         public List<CPKTable> table;
         public cpkwrapper(string inFile)
         {
             string cpk_name = inFile;
             table = new List<CPKTable>();
-            cpk = new CPK(new Tools());
-            cpk.ReadCPK(cpk_name);
+            myPackage.cpk = new CPK(new Tools());
+            myPackage.cpk.ReadCPK(cpk_name);
+            myPackage.cpk_name = cpk_name;
 
             BinaryReader oldFile = new BinaryReader(File.OpenRead(cpk_name));
-            List<FileEntry> entries = cpk.FileTable.OrderBy(x => x.FileOffset).ToList();
-            for (int i = 0; i < entries.Count; i++)
+            List<FileEntry> entries = myPackage.cpk.FileTable.OrderBy(x => x.FileOffset).ToList();
+            int i = 0;
+            while (i < entries.Count)
             {
                 /*
                 Console.WriteLine("FILE ID:{0},File Name:{1},File Type:{5},FileOffset:{2:x8},Extract Size:{3:x8},Chunk Size:{4:x8}", entries[i].ID,
@@ -41,7 +51,7 @@ namespace CriPakGUI
                                                             entries[i].ExtractSize,
                                                             entries[i].FileSize,
                                                             entries[i].FileType);
-                 */
+                */
                 
                 
                 if (entries[i].FileType != null)
@@ -66,8 +76,11 @@ namespace CriPakGUI
                     }
                     table.Add(t);
                 }
+                i += 1;
 
             }
+            oldFile.Close();
+
         }
     }
 }

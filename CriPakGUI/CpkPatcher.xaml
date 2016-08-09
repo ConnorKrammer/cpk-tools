@@ -1,0 +1,21 @@
+﻿<Window x:Class="CriPakGUI.CpkPatcher"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="Patch CPK" Height="336" Width="564" ResizeMode="NoResize" Icon="Resources/importAssets.ico">
+    <Grid>
+        <TextBox x:Name="textbox_patchDir" HorizontalAlignment="Left" Height="23" Margin="26,35,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="372"/>
+        <Button x:Name="button_selPatchPath" Content="..." HorizontalAlignment="Left" Margin="403,35,0,0" VerticalAlignment="Top" Width="37" Height="23" Click="button_selPatchPath_Click"/>
+        <Label Content="① Select Patch data Directory" HorizontalAlignment="Left" Margin="26,10,0,0" VerticalAlignment="Top" Width="190"/>
+        <Label Content="② Select new CPK Path..." HorizontalAlignment="Left" Margin="26,63,0,0" VerticalAlignment="Top" Width="190"/>
+        <TextBox x:Name="textbox_cpkDir" HorizontalAlignment="Left" Height="23" Margin="26,93,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="372"/>
+        <Button x:Name="button_selDstCPK" Content="..." HorizontalAlignment="Left" Margin="403,93,0,0" VerticalAlignment="Top" Width="37" Height="23" Click="button_selDstCPK_Click"/>
+        <ProgressBar x:Name="progressbar1" HorizontalAlignment="Left" Height="18" Margin="26,195,0,0" VerticalAlignment="Top" Width="414"/>
+        <Label Content="Progress:" HorizontalAlignment="Left" Margin="26,191,0,0" VerticalAlignment="Top" Width="77" Height="27" FontSize="10"/>
+        <Button x:Name="button_PatchCPK" Content="Patch CPK" HorizontalAlignment="Left" Margin="461,63,0,0" VerticalAlignment="Top" Width="75" Height="80" Click="button_PatchCPK_Click"/>
+        <CheckBox x:Name="checkbox_donotcompress" Content="Don't use CRILAYLA compression" HorizontalAlignment="Left" Margin="26,143,0,0" VerticalAlignment="Top"/>
+        <ScrollViewer x:Name="scrollview0" HorizontalAlignment="Left" Height="50" Margin="26,223,0,0" VerticalAlignment="Top" Width="414" VerticalScrollBarVisibility="Auto">
+            <TextBlock x:Name="textblock0" TextWrapping="WrapWithOverflow" ScrollViewer.CanContentScroll="True"/>
+        </ScrollViewer>
+
+    </Grid>
+</Window>
