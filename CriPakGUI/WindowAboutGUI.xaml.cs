@@ -19,9 +19,12 @@ namespace CriPakGUI
     /// </summary>
     public partial class WindowAboutGUI : Window
     {
-        public WindowAboutGUI()
+        public WindowAboutGUI(double x, double y)
         {
             InitializeComponent();
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
+            this.Top = x;
+            this.Left = y;
             SetWindowPrefs();
         }
         private void SetWindowPrefs()

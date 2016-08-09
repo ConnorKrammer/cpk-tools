@@ -26,9 +26,12 @@ namespace CriPakGUI
     /// </summary>
     public partial class CpkPatcher : Window
     {
-        public CpkPatcher()
+        public CpkPatcher(double x, double y)
         {
             InitializeComponent();
+            this.WindowStartupLocation = WindowStartupLocation.Manual;
+            this.Top = x;
+            this.Left = y;
         }
 
         private void button_selPatchPath_Click(object sender, RoutedEventArgs e)

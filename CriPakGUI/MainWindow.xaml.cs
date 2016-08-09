@@ -85,7 +85,7 @@ namespace CriPakGUI
 
         private void menu_importAssets_Click(object sender, RoutedEventArgs e)
         {
-            CpkPatcher patcherWindow = new CpkPatcher();
+            CpkPatcher patcherWindow = new CpkPatcher(this.Top, this.Left);
             patcherWindow.ShowDialog();
         }
 
@@ -205,7 +205,7 @@ namespace CriPakGUI
 
         private void button_importassets_Click(object sender, RoutedEventArgs e)
         {
-            CpkPatcher patcherWindow = new CpkPatcher();
+            CpkPatcher patcherWindow = new CpkPatcher(this.Top, this.Left);
             patcherWindow.ShowDialog();
 
 
@@ -213,7 +213,7 @@ namespace CriPakGUI
 
         private void menu_aboutgui_Click(object sender, RoutedEventArgs e)
         {
-            WindowAboutGUI aboutwindow = new WindowAboutGUI();
+            WindowAboutGUI aboutwindow = new WindowAboutGUI(this.Top, this.Left);
             aboutwindow.ShowDialog();
         }
 
