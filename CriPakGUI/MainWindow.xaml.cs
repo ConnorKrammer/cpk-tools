@@ -205,13 +205,8 @@ namespace CriPakGUI
 
         private void button_importassets_Click(object sender, RoutedEventArgs e)
         {
-            VistaFolderBrowserDialog patchFilesDialog = new VistaFolderBrowserDialog();
-            patchFilesDialog.SelectedPath = myPackage.basePath + "/";
-            if (patchFilesDialog.ShowDialog().Value)
-            {
-                Debug.Print(String.Format("Load Patch Files from:{0}", patchFilesDialog.SelectedPath));
-
-            }
+            CpkPatcher patcherWindow = new CpkPatcher();
+            patcherWindow.ShowDialog();
 
 
         }
