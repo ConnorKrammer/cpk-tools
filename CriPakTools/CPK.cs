@@ -1392,7 +1392,7 @@ namespace CriPakTools
             }
         }
 
-        public Type GetType()
+        public new Type GetType()
         {
             object result = -1;
 

@@ -20,17 +20,17 @@
             <MenuItem Header="_File">
                 <MenuItem x:Name="menu_openfile" Header="Open CPK" Click="menu_openfile_Click" >
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16" Source="Resources/openFile.ico"/>
+                        <Image Width="18" Height="18" Source="Resources/openFile.ico"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="menu_importAssets" Header="Patch CPK..." Click="menu_importAssets_Click" >
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16" Source="Resources/importAssets.ico"/>
+                        <Image Width="18" Height="18" Source="Resources/importAssets.ico"/>
                     </MenuItem.Icon>
                 </MenuItem>
                 <MenuItem x:Name="menu_savefiles" Header="Extract CPK..." Click="menu_savefiles_Click" >
                     <MenuItem.Icon>
-                        <Image Width="16" Height="16" Source="Resources/saveFiles.ico"/>
+                        <Image Width="18" Height="18" Source="Resources/saveFiles.ico"/>
                     </MenuItem.Icon>
                 </MenuItem>
             </MenuItem>
@@ -68,6 +68,12 @@
                 <DataGridTextColumn x:Name="culume_type" Header="Data Type" MinWidth="40" Binding="{Binding FileType}"/>
                 <DataGridTextColumn x:Name="colume_pt" Header="%" MinWidth="40" Binding="{Binding Pt}"/>
             </DataGrid.Columns>
+            <DataGrid.ContextMenu>
+                <ContextMenu Name="dgmenu1" StaysOpen="true"  PreviewMouseRightButtonDown="dgmenu1_Cilck">
+                    <MenuItem  Name="dgitem1" Header="_Decompress Item" Click="dgitem1_Click"/>
+                    <MenuItem  Name="dgitem2" Header="_Inject Item" Click="dgitem2_Click"/>
+                </ContextMenu>
+            </DataGrid.ContextMenu>
         </DataGrid>
         <Grid Grid.ColumnSpan="3" Height="37" Margin="0,25,0,0" VerticalAlignment="Top" Background="{DynamicResource {x:Static SystemColors.MenuBarBrushKey}}">
             <Button x:Name="button_importassets" Content="Patch CPK" HorizontalAlignment="Left" Margin="142,10,0,0" VerticalAlignment="Top" Width="86" IsEnabled="False" Click="button_importassets_Click"/>

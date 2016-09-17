@@ -217,5 +217,90 @@ namespace CriPakGUI
             aboutwindow.ShowDialog();
         }
 
+        private void dgmenu1_Cilck(object sender, MouseButtonEventArgs e)
+        {
+            Point p = e.GetPosition(this.datagrid_cpk);
+            HitTestResult htr = VisualTreeHelper.HitTest(this.datagrid_cpk, p);
+            TextBlock o = htr.VisualHit as TextBlock;
+            if (o != null)
+            {
+                DataGridRow dgr = VisualTreeHelper.GetParent(o) as DataGridRow;
+
+                dgr.Focus();
+                dgr.IsSelected = true;
+            }
+        }
+        private void dgitem1_Click(object sender, RoutedEventArgs e)
+        {
+            
+            CPKTable t = this.datagrid_cpk.SelectedItem as CPKTable;
+            if (t != null)
+            {
+                if (t.FileSize > 0 && t.FileType == "FILE")
+                {
+                    VistaSaveFileDialog saveFilesDialog = new VistaSaveFileDialog();
+                    saveFilesDialog.InitialDirectory = myPackage.basePath ;
+                    saveFilesDialog.FileName = myPackage.basePath + "/" + t.FileName;
+                    if (saveFilesDialog.ShowDialog().Value)
+                    {
+                        byte[] chunk = ExtractItem(t);
+
+                        File.WriteAllBytes(saveFilesDialog.FileName, chunk);
+                        MessageBox.Show(String.Format("Decompress to :{0}", saveFilesDialog.FileName));
+                    }
+                    
+                } 
+            }
+            
+        }
+
+        private void dgitem2_Click(object sender, RoutedEventArgs e)
+        {
+            CPKTable t = this.datagrid_cpk.SelectedItem as CPKTable;
+            if (t != null)
+            {
+                if (t.FileSize > 0 && t.FileType == "FILE")
+                {
+
+                }
+            }
+        }
+
+        private byte[] ExtractItem(CPKTable t)
+        {
+            CPKTable entries = t as CPKTable;
+            BinaryReader oldFile = new BinaryReader(File.OpenRead(myPackage.cpk_name));
+            oldFile.BaseStream.Seek((long)entries.FileOffset, SeekOrigin.Begin);
+
+            string isComp = Encoding.ASCII.GetString(oldFile.ReadBytes(8));
+            oldFile.BaseStream.Seek((long)entries.FileOffset, SeekOrigin.Begin);
+
+            byte[] chunk = oldFile.ReadBytes(Int32.Parse(entries.FileSize.ToString()));
+
+            if (isComp == "CRILAYLA")
+            {
+                int size;
+                if (entries.ExtractSize == 0)
+                {
+                    size = entries.FileSize;
+                }
+                else
+                {
+                    size = entries.ExtractSize;
+                }
+
+                if (size != 0)
+                {
+                    chunk = myPackage.cpk.DecompressLegacyCRI(chunk, size);
+                }
+            }
+            oldFile.Close();
+            return chunk;
+
+
+
+
+        }
+
     }
 }

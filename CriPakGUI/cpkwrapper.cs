@@ -19,7 +19,7 @@ namespace CriPakGUI
         public int id { get; set; }
         public string FileName { get; set; }
         //public string DirName;
-        public int FileOffset { get; set; }
+        public UInt64 FileOffset { get; set; }
         public int FileSize { get; set; }
         public int ExtractSize { get; set; }
         public string FileType { get; set; }
@@ -62,7 +62,7 @@ namespace CriPakGUI
                     t.id = i;
                     t.FileName = (((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName);
 
-                    t.FileOffset = Convert.ToInt32(entries[i].FileOffset);
+                    t.FileOffset = Convert.ToUInt64(entries[i].FileOffset);
                     t.FileSize = Convert.ToInt32(entries[i].FileSize);
                     t.ExtractSize = Convert.ToInt32(entries[i].ExtractSize);
                     t.FileType = entries[i].FileType;
