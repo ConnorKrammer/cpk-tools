@@ -5,6 +5,7 @@ using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
 
+
 namespace CriPakTools
 {
     public class CPK

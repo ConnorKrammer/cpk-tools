@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
+using LibCRIComp;
 
 namespace LibCPK
 {
@@ -616,7 +617,7 @@ namespace LibCPK
             return result;
         }
 
-        unsafe public int CRICompress(byte* dest, int* destLen, byte* src, int srcLen)
+        /*unsafe public int CRICompress(byte* dest, int* destLen, byte* src, int srcLen)
         {
             int n = srcLen - 1, m = *destLen - 0x1, T = 0, d = 0;
 
@@ -719,12 +720,26 @@ namespace LibCPK
             *destLen += 0x110;
 
             return *destLen;
-        }
-
+        }*/
+        // unsafe指针在.NET 4.5下似乎很不稳定，有时出现“尝试读取或写入受保护的内存， 这通常指示其它内存已损坏”的错误
+        // 目前将CRICompress方法移动到了CLR类库中使用。
         unsafe public byte[] CompressCRILAYLA(byte[] input)
         {
-
             unsafe
+            {
+                fixed (byte* src = input, dst = new byte[input.Length])
+                {
+                    //Move cricompress to CLR
+                    int destLength = (int)input.Length;
+
+                    int result = LibCRIComp.CriCompression.CRIcompress(dst, &destLength, src, input.Length);
+                    byte[] arr = new byte[destLength];
+                    Marshal.Copy((IntPtr)dst, arr, 0, destLength);
+                    return arr;
+                } 
+            }
+            
+            /*unsafe
             {
 
                 int destLength = (int)input.Length;
@@ -739,7 +754,7 @@ namespace LibCPK
                     
                     return arr;
                 }
-            }
+            }*/
 
         }
 

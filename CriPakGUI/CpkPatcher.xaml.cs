@@ -142,7 +142,7 @@ namespace CriPakGUI
 
             for (int i = 0; i < entries.Count; i++)
             {
-                this.Dispatcher.Invoke(new progressbarDelegate(updateprogressbar), new object[] { (float)i / (float)entries.Count * 100f });//异步委托
+                this.UI_SetProgess((float)i / (float)entries.Count * 100f);
                 if (entries[i].FileType != "CONTENT")
                 {
 
@@ -178,6 +178,7 @@ namespace CriPakGUI
                         {
 
                             cpk.EtocOffset = entries[i].FileOffset;
+
                             Debug.Print("Fix ETOC_OFFSET to {0:x8}", cpk.EtocOffset);
 
                         }
@@ -204,7 +205,7 @@ namespace CriPakGUI
                         //Got patch file name
                         msg = string.Format("Patching: {0}", currentName.ToString());
 
-                        this.Dispatcher.Invoke(new textblockDelegate(updateTextblock), new object[] { msg });
+                        this.UI_SetTextBlock(msg);
                         Debug.Print(msg);
 
                         byte[] newbie = File.ReadAllBytes(replace_with);
@@ -215,7 +216,7 @@ namespace CriPakGUI
                         {
                             // is compressed
                             msg = string.Format("Compressing data:{0:x8}", newbie.Length);
-                            this.Dispatcher.Invoke(new textblockDelegate(updateTextblock), new object[] { msg });
+                            this.UI_SetTextBlock(msg);
                             Console.Write(msg);
 
                             byte[] dest_comp = cpk.CompressCRILAYLA(newbie);
@@ -225,14 +226,14 @@ namespace CriPakGUI
                             cpk.UpdateFileEntry(entries[i]);
                             newCPK.Write(dest_comp);
                             msg = string.Format(">> {0:x8}\r\n", dest_comp.Length);
-                            this.Dispatcher.Invoke(new textblockDelegate(updateTextblock), new object[] { msg });
+                            this.UI_SetTextBlock(msg);
                             Console.Write(msg);
                         }
 
                         else
                         {
                             msg = string.Format("Storing data:{0:x8}\r\n", newbie.Length);
-                            this.Dispatcher.Invoke(new textblockDelegate(updateTextblock), new object[] { msg });
+                            this.UI_SetTextBlock(msg);
                             Console.Write(msg);
 
                             entries[i].FileSize = Convert.ChangeType(newbie.Length, entries[i].FileSizeType);
@@ -263,7 +264,7 @@ namespace CriPakGUI
 
             cpk.WriteCPK(newCPK);
             msg = string.Format("Writing TOC....");
-            this.Dispatcher.Invoke(new textblockDelegate(updateTextblock), new object[] { msg });
+            this.UI_SetTextBlock(msg);
             Console.WriteLine(msg);
 
             cpk.WriteITOC(newCPK);
@@ -274,13 +275,24 @@ namespace CriPakGUI
             newCPK.Close();
             oldFile.Close();
             msg = string.Format("Saving CPK to {0}....", outputName);
-            this.Dispatcher.Invoke(new textblockDelegate(updateTextblock), new object[] { msg });
+            this.UI_SetTextBlock(msg);
             Console.WriteLine(msg);
 
             MessageBox.Show("CPK Patched.");
+            this.UI_SetProgess(0f);
 
 
-            
+
+        }
+
+        public void UI_SetProgess(float value)
+        {
+            this.Dispatcher.Invoke(new progressbarDelegate(updateprogressbar), new object[] { (float)value });
+        }
+
+        public void UI_SetTextBlock(string msg)
+        {
+            this.Dispatcher.Invoke(new textblockDelegate(updateTextblock), new object[] { msg });
         }
 
         private void  GetFilesFromPath(string directoryname , ref List<string> ls)
