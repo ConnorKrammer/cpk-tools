@@ -140,6 +140,8 @@ namespace CriPakGUI
 
             Tools tool = new Tools();
 
+            int id;
+            bool bFileRepeated = Tools.CheckListRedundant(entries);
             for (int i = 0; i < entries.Count; i++)
             {
                 this.UI_SetProgess((float)i / (float)entries.Count * 100f);
@@ -159,7 +161,20 @@ namespace CriPakGUI
                         }
                     }
 
-                    string currentName = ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName;
+                    id = Convert.ToInt32(entries[i].ID);
+                    string currentName;
+
+                    if (id > 0 && bFileRepeated)
+                    {
+                        currentName = (((entries[i].DirName != null) ?
+                                        entries[i].DirName + "/" : "") + string.Format("[{0}]", id.ToString()) + entries[i].FileName);
+                    }
+                    else
+                    {
+                        currentName = ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName;
+                    }
+
+                     
 
                     if (!currentName.Contains("/"))
                     {

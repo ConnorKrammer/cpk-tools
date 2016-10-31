@@ -18,6 +18,28 @@ namespace LibCPK
 
         }
 
+        public static bool CheckListRedundant(List<FileEntry> input)
+        {
+
+            bool result = false;
+            List<string> tmp = new List<string>();
+            for (int i = 0; i < input.Count; i++)
+            {
+                string name = ((input[i].DirName != null) ?
+                                        input[i].DirName + "/" : "") + input[i].FileName;
+                if (!tmp.Contains(name))
+                {
+                    tmp.Add(name);
+                }
+                else
+                {
+                    result = true;
+                    return result;
+                }
+            }
+            return result;
+        }
+
         public Dictionary<string, string> ReadBatchScript(string batch_script_name)
         {
             //---------------------

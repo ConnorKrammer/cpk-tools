@@ -18,6 +18,7 @@ namespace CriPakGUI
     {
         public int id { get; set; }
         public string FileName { get; set; }
+        public string _localName { get; set; }
         //public string DirName;
         public UInt64 FileOffset { get; set; }
         public int FileSize { get; set; }
@@ -42,6 +43,7 @@ namespace CriPakGUI
             BinaryReader oldFile = new BinaryReader(File.OpenRead(cpk_name));
             List<FileEntry> entries = myPackage.cpk.FileTable.OrderBy(x => x.FileOffset).ToList();
             int i = 0;
+            bool bFileRepeated = Tools.CheckListRedundant(entries);
             while (i < entries.Count)
             {
                 /*
@@ -59,8 +61,25 @@ namespace CriPakGUI
                     nums += 1;
 
                     CPKTable t = new CPKTable();
-                    t.id = i;
-                    t.FileName = (((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName);
+                    if (entries[i].ID == null)
+                    {
+                        t.id = -1;
+                    }
+                    else
+                    {
+                        t.id = Convert.ToInt32(entries[i].ID);
+                    }
+                    if (t.id >= 0 && bFileRepeated)
+                    {
+                        t.FileName = (((entries[i].DirName != null) ? 
+                                        entries[i].DirName + "/" : "") + string.Format("[{0}]",t.id.ToString()) + entries[i].FileName);
+                    }
+                    else
+                    {
+                        t.FileName = (((entries[i].DirName != null) ?
+                                        entries[i].DirName + "/" : "") +  entries[i].FileName);
+                    }
+                    t._localName = entries[i].FileName.ToString();
 
                     t.FileOffset = Convert.ToUInt64(entries[i].FileOffset);
                     t.FileSize = Convert.ToInt32(entries[i].FileSize);

@@ -983,7 +983,7 @@ namespace LibCPK
             }
             catch (Exception ex)
             {
-                //MessageBox.Show(ex.ToString());
+
                 Console.WriteLine(ex.ToString());
                 return null;
             }

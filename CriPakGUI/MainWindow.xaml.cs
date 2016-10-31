@@ -142,7 +142,9 @@ namespace CriPakGUI
                 }
 
                 int i = 0;
-
+                int id;
+                string currentName;
+                bool bFileRepeated = Tools.CheckListRedundant(entries);
                 this.Dispatcher.Invoke(new datagridDelegate(updateDatagrid), new object[] { (bool)false });
 
                 while (i < entries.Count)
@@ -154,6 +156,16 @@ namespace CriPakGUI
                         Directory.CreateDirectory(outDir + "/" + entries[i].DirName.ToString());
                     }
 
+                    id = Convert.ToInt32(entries[i].ID);
+                    if (id > 0 &&　bFileRepeated)
+                    {
+                        currentName = (((entries[i].DirName != null) ?
+                                        entries[i].DirName + "/" : "") + string.Format("[{0}]", id.ToString()) + entries[i].FileName);
+                    }
+                    else
+                    {
+                        currentName = ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName;
+                    }
 
                     oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
 
@@ -179,12 +191,12 @@ namespace CriPakGUI
                                                                 entries[i].FileSize,
                                                                 ((float)i / (float)entries.Count) * 100f);
 
-                    File.WriteAllBytes(outDir + "/" + ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName.ToString(), chunk);
+                    File.WriteAllBytes(outDir + "/" + currentName, chunk);
                     i += 1;
                 }
                 oldFile.Close();
-                this.Dispatcher.Invoke(new progressbarDelegate(updateprogressbar), new object[] { 100f });//异步委托
-                this.Dispatcher.Invoke(new datagridDelegate(updateDatagrid), new object[] { (bool)true });//异步委托
+                this.Dispatcher.Invoke(new progressbarDelegate(updateprogressbar), new object[] { 100f });
+                this.Dispatcher.Invoke(new datagridDelegate(updateDatagrid), new object[] { (bool)true });
                 MessageBox.Show("Extraction Complete.");
 
             }
@@ -240,7 +252,7 @@ namespace CriPakGUI
                 {
                     VistaSaveFileDialog saveFilesDialog = new VistaSaveFileDialog();
                     saveFilesDialog.InitialDirectory = myPackage.basePath ;
-                    saveFilesDialog.FileName = myPackage.basePath + "/" + t.FileName;
+                    saveFilesDialog.FileName = myPackage.basePath + "/" + t._localName;
                     if (saveFilesDialog.ShowDialog().Value)
                     {
                         byte[] chunk = ExtractItem(t);
@@ -256,14 +268,7 @@ namespace CriPakGUI
 
         private void dgitem2_Click(object sender, RoutedEventArgs e)
         {
-            CPKTable t = this.datagrid_cpk.SelectedItem as CPKTable;
-            if (t != null)
-            {
-                if (t.FileSize > 0 && t.FileType == "FILE")
-                {
-
-                }
-            }
+            MessageBox.Show("Currently not supported");
         }
 
         private byte[] ExtractItem(CPKTable t)
@@ -302,5 +307,9 @@ namespace CriPakGUI
 
         }
 
+        private void menu_makeCSV_Click(object sender, RoutedEventArgs e)
+        {
+            MessageBox.Show("currently not supported");
+        }
     }
 }

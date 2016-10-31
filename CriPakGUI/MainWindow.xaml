@@ -35,7 +35,7 @@
                 </MenuItem>
             </MenuItem>
             <MenuItem Header="_Tools">
-                <MenuItem Header="Make filelist.csv"/>
+                <MenuItem Header="Make filelist.csv" Click="menu_makeCSV_Click"/>
 
             </MenuItem>
             <Separator Margin="0"/>
