@@ -38,6 +38,17 @@
                 <MenuItem Header="Make filelist.csv" Click="menu_makeCSV_Click"/>
 
             </MenuItem>
+            <MenuItem Header="_Encodings">
+                <ComboBox Name="comboBox_encodings" SelectedIndex="0" SelectionChanged="comboBox_encodings_SelectionChanged">
+                    <ComboBoxItem>
+                        <TextBlock Foreground="Blue">UTF-8</TextBlock>
+                    </ComboBoxItem>
+                    <ComboBoxItem>
+                        <TextBlock Foreground="Red">SHIFT-JIS</TextBlock>
+                    </ComboBoxItem>
+                </ComboBox>
+
+            </MenuItem>
             <Separator Margin="0"/>
             <Separator Margin="0"/>
             <Separator Margin="0"/>

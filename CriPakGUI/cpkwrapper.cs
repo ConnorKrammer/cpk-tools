@@ -7,12 +7,20 @@ using System.IO;
 
 namespace CriPakGUI
 {
+    public enum packageEncodings
+    {
+        UTF_8 = 65001,
+        SHIFT_JIS = 932,
+        
+    }
     public static class myPackage
     {
         public static CPK cpk { get; set; }
         public static string basePath { get; set; }
         public static string cpk_name { get; set; }
         public static string baseName { get; set; }
+        public static string fileName { get; set; }
+        public static Encoding encoding = Encoding.GetEncoding(65001);
     }
     public class CPKTable
     {
@@ -37,7 +45,7 @@ namespace CriPakGUI
             string cpk_name = inFile;
             table = new List<CPKTable>();
             myPackage.cpk = new CPK(new Tools());
-            myPackage.cpk.ReadCPK(cpk_name);
+            myPackage.cpk.ReadCPK(cpk_name, myPackage.encoding);
             myPackage.cpk_name = cpk_name;
 
             BinaryReader oldFile = new BinaryReader(File.OpenRead(cpk_name));

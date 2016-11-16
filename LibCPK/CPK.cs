@@ -24,7 +24,7 @@ namespace LibCPK
             FileTable = new List<FileEntry>();
         }
 
-        public bool ReadCPK(string sPath)
+        public bool ReadCPK(string sPath, Encoding encoding = null)
         {
             if (File.Exists(sPath))
             {
@@ -60,7 +60,7 @@ namespace LibCPK
                 utfr = new EndianReader(ms, false);
 
                 utf = new UTF(tools);
-                if (!utf.ReadUTF(utfr))
+                if (!utf.ReadUTF(utfr, encoding))
                 {
                     br.Close();
                     return false;
@@ -108,7 +108,7 @@ namespace LibCPK
                     FileEntry entry = CreateFileEntry("TOC_HDR", TocOffset, typeof(ulong), TocOffsetPos, "CPK", "HDR", false);
                     FileTable.Add(entry);
 
-                    if (!ReadTOC(br, TocOffset, ContentOffset))
+                    if (!ReadTOC(br, TocOffset, ContentOffset, encoding))
                         return false;
                 }
 
@@ -173,7 +173,7 @@ namespace LibCPK
             return entry;
         }
 
-        public bool ReadTOC(EndianReader br, ulong TocOffset, ulong ContentOffset)
+        public bool ReadTOC(EndianReader br, ulong TocOffset, ulong ContentOffset, Encoding encoding = null)
         {
             ulong fTocOffset = TocOffset;
             ulong add_offset = 0;
@@ -218,7 +218,7 @@ namespace LibCPK
             EndianReader utfr = new EndianReader(ms, false);
 
             files = new UTF(tools);
-            if (!files.ReadUTF(utfr))
+            if (!files.ReadUTF(utfr, encoding))
             {
                 br.Close();
                 return false;
@@ -1205,7 +1205,7 @@ namespace LibCPK
             tools = tool;
         }
 
-        public bool ReadUTF(EndianReader br)
+        public bool ReadUTF(EndianReader br ,Encoding encoding = null)
         {
             long offset = br.BaseStream.Position;
 
@@ -1243,7 +1243,7 @@ namespace LibCPK
                     column.flags = br.ReadByte();
                 }
 
-                column.name = tools.ReadCString(br, -1, (long)(br.ReadInt32() + strings_offset));
+                column.name = tools.ReadCString(br, -1, (long)(br.ReadInt32() + strings_offset), encoding);
                 columns.Add(column);
             }
 
@@ -1317,7 +1317,7 @@ namespace LibCPK
                             break;
 
                         case 0xA:
-                            current_row.str = tools.ReadCString(br, -1, br.ReadInt32() + strings_offset);
+                            current_row.str = tools.ReadCString(br, -1, br.ReadInt32() + strings_offset , encoding);
                             break;
 
                         case 0xB:

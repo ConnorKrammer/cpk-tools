@@ -76,7 +76,7 @@ namespace CriPakGUI
                         menu_savefiles.IsEnabled = true;
                         myPackage.basePath = System.IO.Path.GetDirectoryName(fName);
                         myPackage.baseName = System.IO.Path.GetFileName(fName);
-
+                        myPackage.fileName = fName;
                     } )
                );
             });  
@@ -310,6 +310,38 @@ namespace CriPakGUI
         private void menu_makeCSV_Click(object sender, RoutedEventArgs e)
         {
             MessageBox.Show("currently not supported");
+        }
+
+        private void comboBox_encodings_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            int cur = comboBox_encodings.SelectedIndex;
+            Encoding current_codepage;
+            switch (cur)
+            {
+                case 0:
+                    current_codepage = Encoding.GetEncoding(65001);
+                    break;
+                case 1:
+                    current_codepage = Encoding.GetEncoding(932);
+                    break;
+                default:
+                    current_codepage = Encoding.GetEncoding(65001);
+                    break;
+
+            }
+            if (current_codepage != myPackage.encoding)
+            {
+                myPackage.encoding = current_codepage;
+                if (myPackage.fileName != null)
+                {
+
+                    beginLoadCPK(myPackage.fileName);
+                }
+
+            }
+            
+            
+
         }
     }
 }
