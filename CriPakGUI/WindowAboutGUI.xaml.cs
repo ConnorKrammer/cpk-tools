@@ -34,7 +34,7 @@ namespace CriPakGUI
 Github repository:
 https://github.com/wmltogether/CriPakTools
 
-This tool is based off of code by 
+This tool is based on codes by 
 Falo (http://forum.xentax.com/viewtopic.php?f=10&t=10646),
 Nanashi3(http://forums.fuwanovel.org/index.php?/topic/1785-request-for-psp-hackers/page-4),
 esperknight (https://github.com/esperknight/CriPakTools),
@@ -45,10 +45,12 @@ I forked these repos , added batch reimport \ compression code \ basic GUI and f
 Thanks for KenTse 's CRILAYLA compression method.
 
 What's new in this modding version:
+ Added Encodings for CPK Reader
  Added Batch Mode
  Added compression option
  Fixed GTOC & ETOC
  Fixed CPK header
+
 
 now it support almost all games using Criware cpk with itoc ,gtoc and etoc chunks.
 

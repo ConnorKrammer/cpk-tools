@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>LibCPK</RootNamespace>
     <AssemblyName>LibCPK</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
   </PropertyGroup>
@@ -31,10 +31,10 @@
     <OutputPath>bin\Release\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
+    <WarningLevel>3</WarningLevel>
     <Prefer32Bit>false</Prefer32Bit>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />
@@ -53,7 +53,7 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\LibCRIComp\LibCRIComp.vcxproj">
-      <Project>{40d3de38-234a-4356-a4dd-88298a894ee8}</Project>
+      <Project>{e5829a5b-e121-41aa-a84b-e7b4c8dbdf30}</Project>
       <Name>LibCRIComp</Name>
     </ProjectReference>
   </ItemGroup>

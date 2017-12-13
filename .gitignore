@@ -192,3 +192,5 @@ ModelManifest.xml
 /CriPakTools.VC.db
 /CriPakTools.VC.VC.opendb
 *.cpk
+/.vs/CriPakTools/v15
+/LibCRIComp/ReadMe.txt

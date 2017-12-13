@@ -9,7 +9,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>CriPakGUI</RootNamespace>
     <AssemblyName>CriPakGUI</AssemblyName>
-    <TargetFrameworkVersion>v4.6</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -43,7 +43,7 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>x86</PlatformTarget>
+    <PlatformTarget>x64</PlatformTarget>
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
@@ -146,10 +146,6 @@
     <ProjectReference Include="..\LibCPK\LibCPK.csproj">
       <Project>{ba3a00e4-4f51-4ab4-a8fb-f4b64a874449}</Project>
       <Name>LibCPK</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\LibCRIComp\LibCRIComp.vcxproj">
-      <Project>{40d3de38-234a-4356-a4dd-88298a894ee8}</Project>
-      <Name>LibCRIComp</Name>
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>

@@ -161,10 +161,12 @@ namespace CriPakGUI
                     {
                         currentName = (((entries[i].DirName != null) ?
                                         entries[i].DirName + "/" : "") + string.Format("[{0}]", id.ToString()) + entries[i].FileName);
+                        currentName = currentName.TrimStart('/');
                     }
                     else
                     {
                         currentName = ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName;
+                        currentName = currentName.TrimStart('/');
                     }
 
                     oldFile.BaseStream.Seek((long)entries[i].FileOffset, SeekOrigin.Begin);
@@ -190,8 +192,14 @@ namespace CriPakGUI
                                                                 entries[i].ExtractSize,
                                                                 entries[i].FileSize,
                                                                 ((float)i / (float)entries.Count) * 100f);
-
-                    File.WriteAllBytes(outDir + "/" + currentName, chunk);
+                    string dstpath = outDir + "/" + currentName;
+                    dstpath = Tools.GetSafePath(dstpath);
+                    string dstdir = System.IO.Path.GetDirectoryName(dstpath);
+                    if (!Directory.Exists(dstdir))
+                    {
+                        Directory.CreateDirectory(dstdir);
+                    }
+                    File.WriteAllBytes(dstpath, chunk);
                     i += 1;
                 }
                 oldFile.Close();

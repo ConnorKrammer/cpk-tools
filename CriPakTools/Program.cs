@@ -4,9 +4,13 @@ using System.Linq;
 using System.Text;
 using System.IO;
 using System.Runtime.InteropServices;
-
+using LibCPK;
 namespace CriPakTools
 {
+    public class SystemEncoding
+    {
+        public static Encoding Codecs = Encoding.UTF8;
+    }
     class Program
     {
         [DllImport("user32.dll", EntryPoint = "MessageBox")]
@@ -15,6 +19,8 @@ namespace CriPakTools
         {
             MsgBox(IntPtr.Zero, msg, "CriPakTools", 1);
         }
+        
+
         static void Main(string[] args)
         {
             if (args.Length == 0)
@@ -22,11 +28,14 @@ namespace CriPakTools
 
                 Console.WriteLine("error: no args\n");
                 Console.WriteLine("====================");
-                Console.WriteLine("This tool is based off of code by Falo , Nanashi3 ,esperknight and uyjulian");
+                Console.WriteLine("This tool has been redesigned, please use CriPakGUI.exe ");
+                Console.WriteLine("====================");
+                Console.WriteLine("This tool is based on the codes by Falo , Nanashi3 ,esperknight and uyjulian");
                 Console.WriteLine("I forked and added batch reimport and compress code .");
                 Console.WriteLine("Thanks for KenTse 's CRILAYLA compression method");
                 Console.WriteLine("                                     by: wmltogether@gmail.com");
                 Console.WriteLine("CriPakTool Usage:");
+                Console.WriteLine(" -e - set encodings (utf8, utf16, cp932)");
                 Console.WriteLine(" -l - Displays all contained chunks.");
                 Console.WriteLine(" -x - Extracts all files.");
                 Console.WriteLine(" -r REPLACE_ME REPLACE_WITH - Replaces REPLACE_ME with REPLACE_WITH.");
@@ -37,7 +46,7 @@ namespace CriPakTools
                 Console.WriteLine(" -y - use legacy (c)CRI decompression");
                 Console.WriteLine(" -b BATCH_REPLACE_LIST_TXT - Batch Replace file recorded in filelist.txt .");
                 Console.WriteLine(" -h HELP");
-                Program.ShowMsgBox("Error:  \n  Please use this program in console!");
+                Program.ShowMsgBox("Error:  \n  Please run this program from console!");
                 
                 return;
             }
@@ -62,6 +71,24 @@ namespace CriPakTools
                 {
                     switch (option[1])
                     {
+                        case 'e':
+                            {
+                                var encodingdata = args[i + 1];
+                                if (encodingdata.ToLower().Equals("utf8") || encodingdata.ToLower().Equals("utf-8"))
+                                {
+                                    SystemEncoding.Codecs = Encoding.UTF8;
+                                }
+                                    
+                                else if (encodingdata.ToLower().Equals("cp932") || encodingdata.ToLower().Equals("sjis") || encodingdata.ToLower().Equals("shift-jis"))
+                                {
+                                    SystemEncoding.Codecs = Encoding.GetEncoding(932);
+                                }
+                                else if (encodingdata.ToLower().Equals("utf-16") || encodingdata.ToLower().Equals("unicode") || encodingdata.ToLower().Equals("utf16"))
+                                {
+                                    SystemEncoding.Codecs = Encoding.Unicode;
+                                }
+                                break;
+                            }
                         case 'x': doExtract = true; break;
                         case 'c': bUseCompress = true; break;
                         case 'r': doReplace = true; replaceMe = args[i + 1]; replaceWith = args[i + 2]; break;
@@ -131,7 +158,7 @@ namespace CriPakTools
             string cpk_name = inFile;
 
             CPK cpk = new CPK(new Tools());
-            cpk.ReadCPK(cpk_name);
+            cpk.ReadCPK(cpk_name, SystemEncoding.Codecs);
 
             BinaryReader oldFile = new BinaryReader(File.OpenRead(cpk_name));
 
@@ -198,7 +225,14 @@ namespace CriPakTools
                             }
                     }
 
-                    File.WriteAllBytes(outDir + "/" + ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName.ToString(), chunk);
+                    string dstpath = outDir + "/" + ((entries[i].DirName != null) ? entries[i].DirName + "/" : "") + entries[i].FileName.ToString();
+                    dstpath = Tools.GetSafePath(dstpath);
+                    string dstdir = Path.GetDirectoryName(dstpath);
+                    if (!Directory.Exists(dstdir))
+                    {
+                        Directory.CreateDirectory(dstdir);
+                    }
+                    File.WriteAllBytes(dstpath, chunk);
 
                 }
             }

@@ -16,7 +16,7 @@ using namespace System::Security::Permissions;
 [assembly:AssemblyConfigurationAttribute(L"")];
 [assembly:AssemblyCompanyAttribute(L"")];
 [assembly:AssemblyProductAttribute(L"LibCRIComp")];
-[assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2016")];
+[assembly:AssemblyCopyrightAttribute(L"Copyright (c)  2017")];
 [assembly:AssemblyTrademarkAttribute(L"")];
 [assembly:AssemblyCultureAttribute(L"")];
 

@@ -1,13 +1,13 @@
 // 这是主 DLL 文件。
-
+#include <windows.h>
 #include "stdafx.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-#include <windows.h>
 #include "LibCRIComp.h"
 
-namespace LibCRIComp 
+
+namespace LibCRIComp
 {
 	/*
 	CRIcompress method by KenTse

@@ -106,7 +106,7 @@ namespace LibCPK
                 br.BaseStream.Seek(lOffset, SeekOrigin.Begin);
 
                 if (enc == null)
-                    result = Encoding.ASCII.GetString(br.ReadBytes(i));
+                    result = Encoding.UTF8.GetString(br.ReadBytes(i));
                 else
                     result = enc.GetString(br.ReadBytes(i));
 
@@ -145,6 +145,11 @@ namespace LibCPK
             result = br.ReadBytes(size);
             br.BaseStream.Seek(backup, SeekOrigin.Begin);
             return result;
+        }
+
+        public static string GetSafePath(string filename)
+        {
+            return string.Join("_", filename.Split(Path.GetInvalidFileNameChars()));
         }
 
     }
